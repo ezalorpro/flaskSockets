@@ -1,18 +1,39 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <div v-for="(usuario, index) in users" :key="usuario.nombre + index">
+      <span
+        >nombre : {{ usuario.nombre }} ocupacion: {{ usuario.ocupacion }}</span
+      >
+    </div>
+    <button @click="clickButton">evento</button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
 export default {
   name: "Home",
-  components: {
-    HelloWorld,
+  data() {
+    return {
+      users: []
+    }
   },
-};
+  mounted() {
+    this.$axios.get("users").then((r) => {
+      this.users = r.data
+    })
+  },
+  sockets: {
+    connect: function (data) {
+      console.log(data)
+    },
+    myEvent: function (data) {
+      this.users.push(data)
+    }
+  },
+  methods: {
+    clickButton: function () {
+      this.$socket.emit("my event")
+    }
+  }
+}
 </script>
